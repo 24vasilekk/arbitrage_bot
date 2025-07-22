@@ -1,5 +1,6 @@
 """
 Тестирование подключений к MEXC и DEX источникам
+Перенесено из tests/test_connections.py для использования в run.py
 """
 
 import asyncio

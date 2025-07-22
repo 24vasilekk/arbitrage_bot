@@ -31,6 +31,8 @@ def parse_args():
                        help='Символы через запятую (например: BTC/USDT,ETH/USDT)')
     parser.add_argument('--log-level', default='INFO',
                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
+    parser.add_argument('--skip-tests', action='store_true',
+                       help='Пропустить тестирование подключений')
     return parser.parse_args()
 
 async def main():
@@ -50,7 +52,9 @@ async def main():
         return
     
     # Режим работы
-    if args.test_mode or os.getenv('TEST_MODE', 'true').lower() == 'true':
+    test_mode = args.test_mode or os.getenv('TEST_MODE', 'true').lower() == 'true'
+    
+    if test_mode:
         print("📋 Режим: ТЕСТОВЫЙ (без реальных сделок)")
     else:
         print("⚠️  Режим: ПРОДАКШН (реальные сделки!)")
@@ -64,28 +68,45 @@ async def main():
         symbols = [s.strip() for s in args.symbols.split(',')]
         print(f"📈 Символы: {symbols}")
     else:
-        symbols = ['BTC/USDT', 'ETH/USDT', 'BNB/USDT']  # По умолчанию
-        print(f"📈 Символы по умолчанию: {symbols}")
+        symbols = None  # Используем из конфига
+        print(f"📈 Символы: будут загружены из конфигурации")
     
     print("✅ API ключи найдены")
-    print("🔄 Запуск тестирования подключений...")
+    
+    # Тестирование подключений (если не пропущено)
+    if not args.skip_tests:
+        print("🔄 Запуск тестирования подключений...")
+        try:
+            from test_connections import test_all_connections
+            test_result = await test_all_connections()
+            
+            if not test_result:
+                print("\n❌ Тестирование не прошло. Запуск остановлен.")
+                print("💡 Используйте --skip-tests для пропуска тестов")
+                return
+            
+            print("\n✅ Все тесты прошли успешно!")
+            
+        except Exception as e:
+            print(f"\n❌ Ошибка тестирования: {e}")
+            print("💡 Используйте --skip-tests для пропуска тестов")
+            return
+    
+    # Запуск основного бота
+    print("🎯 Запуск арбитражного бота...")
     
     try:
-        # Пока что просто тестируем подключения
-        # Позже здесь будет запуск полноценного бота
-        from test_connections import test_all_connections
-        await test_all_connections()
+        from src.main import ArbitrageBot
         
-        print("\n✅ Все тесты прошли успешно!")
-        print("🎯 Бот готов к работе")
-        
-        # TODO: Здесь будет запуск основного бота
-        # from src.main import ArbitrageBot
-        # bot = ArbitrageBot(symbols=symbols, test_mode=args.test_mode)
-        # await bot.start()
+        # Создаем и запускаем бота
+        bot = ArbitrageBot(symbols=symbols, test_mode=test_mode)
+        await bot.start()
         
     except KeyboardInterrupt:
         print("\n⏹️  Остановка бота пользователем...")
+    except ImportError as e:
+        print(f"\n❌ Ошибка импорта: {e}")
+        print("🔧 Убедитесь, что все файлы на месте и зависимости установлены")
     except Exception as e:
         print(f"\n❌ Критическая ошибка: {e}")
         print("🔧 Проверьте настройки API и интернет-соединение")
@@ -93,10 +114,8 @@ async def main():
 if __name__ == "__main__":
     # Создание необходимых папок
     os.makedirs('logs', exist_ok=True)
+    os.makedirs('logs/stats', exist_ok=True)
     os.makedirs('data', exist_ok=True)
-    os.makedirs('src/exchanges', exist_ok=True)
-    os.makedirs('src/utils', exist_ok=True)
-    os.makedirs('config', exist_ok=True)
     
     # Запуск
     asyncio.run(main())
