@@ -1,15 +1,17 @@
 # Настройки арбитражного бота MEXC vs DEX
 # Автор: 24vasilekk (24vasilekk@gmail.com)
 # Путь: config/settings.yaml
+# ОБНОВЛЕН: Только DexScreener, быстрые обновления, агрессивные настройки
 
 trading:
   # Основные параметры торговли
   min_spread_percent: 7.5        # Минимальный спред для входа в сделку (%)
   target_spread_percent: 1.5     # Целевой спред для выхода из сделки (%)  
-  max_position_size: 100         # Максимальный размер позиции в USDT
+  max_position_size: 5.10        # Фиксированный размер позиции в USDT
   test_mode: true                # Тестовый режим (true = без реальных сделок)
+  leverage: 2                    # Кредитное плечо 2x
   
-  # ОБНОВЛЕННЫЙ список торговых пар для мониторинга (40 монет)
+  # СПИСОК торговых пар для мониторинга (40 монет)
   symbols:
     # НОВЫЕ ДОБАВЛЕННЫЕ МОНЕТЫ (25 шт.)
     - "DIS/USDT"       # DIS
@@ -61,51 +63,39 @@ exchanges:
     name: "MEXC Futures"
     type: "futures" 
     fee_rate: 0.0002            # Комиссия 0.02% (maker/taker)
-    leverage: 1                 # Кредитное плечо (начинайте с 1x!)
+    leverage: 2                 # Кредитное плечо 2x
     
-  # Источники цен DEX
+  # Источники цен DEX - ТОЛЬКО DEXSCREENER
   dex:
-    # CoinGecko - основной источник
-    coingecko:
-      url: "https://api.coingecko.com/api/v3"
-      fee_rate: 0.003           # Средняя комиссия DEX ~0.3%
-      weight: 0.5               # Вес источника при усреднении
-      
-    # DexScreener - дополнительный
+    # DexScreener - единственный источник
     dexscreener:
       url: "https://api.dexscreener.com/latest"
-      fee_rate: 0.003
-      weight: 0.3
-      
-    # Binance для сравнения (не DEX, но для контроля)
-    binance_spot:
-      url: "https://api.binance.com/api/v3" 
-      fee_rate: 0.001
-      weight: 0.2
+      fee_rate: 0.003           # Средняя комиссия DEX ~0.3%
+      weight: 1.0               # Единственный источник
 
 monitoring:
-  price_update_interval: 5      # Интервал обновления цен (секунды)
-  health_check_interval: 60     # Интервал проверки здоровья системы (секунды)
-  max_price_age: 30            # Максимальный возраст цены (секунды)
-  reconnect_attempts: 3        # Попытки переподключения при ошибках
+  price_update_interval: 1      # БЫСТРОЕ обновление цен каждую секунду
+  health_check_interval: 30     # Интервал проверки здоровья системы (секунды)
+  max_price_age: 2             # Максимальный возраст цены (2 секунды)
+  reconnect_attempts: 5        # Больше попыток переподключения
 
 risk_management:
-  # Лимиты потерь - НАЧНИТЕ С МАЛЕНЬКИХ СУММ!
-  max_daily_loss: 50           # Максимальные потери в день (USDT)
-  max_weekly_loss: 200         # Максимальные потери в неделю (USDT)
-  max_total_loss: 500          # Максимальные общие потери (USDT)
+  # УБРАНЫ ЛИМИТЫ ПОТЕРЬ по требованию
+  max_daily_loss: 999999       # Лимиты убраны
+  max_weekly_loss: 999999      # Лимиты убраны
+  max_total_loss: 999999       # Лимиты убраны
   
   # Управление позициями
-  max_positions: 3             # Максимальное количество одновременных позиций
+  max_positions: 10            # Больше одновременных позиций
   max_position_time: 3600      # Максимальное время удержания позиции (секунды)
   
-  # Стоп-лоссы и тейк-профиты
-  stop_loss_percent: 2.0       # Стоп-лосс (%)
-  take_profit_percent: 4.0     # Тейк-профит (%)
+  # АГРЕССИВНЫЕ стоп-лоссы и тейк-профиты
+  stop_loss_percent: 50.0      # АГРЕССИВНЫЙ стоп-лосс 50%
+  take_profit_percent: 20.0    # Увеличен тейк-профит до 20%
   
-  # Размеры позиций
-  min_position_size: 10        # Минимальный размер позиции (USDT)
-  position_size_percent: 10    # Процент от баланса на одну позицию
+  # ФИКСИРОВАННЫЕ размеры позиций
+  fixed_position_size: 5.10    # Фиксированный размер $5.10
+  position_leverage: 2         # Плечо 2x
 
 logging:
   level: "INFO"                # DEBUG, INFO, WARNING, ERROR
@@ -125,20 +115,10 @@ notifications:
     enabled: false
     bot_token: ""
     chat_id: ""
-    
-    # Что отправлять в Telegram
-    notify_trades: true        # Уведомления о сделках
-    notify_errors: true        # Уведомления об ошибках  
-    notify_daily_report: true  # Ежедневный отчет
   
   # Email уведомления (опционально)
   email:
     enabled: false
-    smtp_server: "smtp.gmail.com"
-    port: 587
-    username: ""
-    password: ""
-    to_email: ""
 
 database:
   # Настройки базы данных для хранения истории

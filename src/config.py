@@ -1,6 +1,7 @@
 """
 Конфигурационный модуль для арбитражного бота
 Автор: 24vasilekk
+ОБНОВЛЕН: Агрессивные настройки, убраны лимиты
 """
 
 import os
@@ -33,24 +34,27 @@ class Config:
             return self._default_config()
     
     def _default_config(self) -> Dict[str, Any]:
-        """Конфигурация по умолчанию"""
+        """Конфигурация по умолчанию - АГРЕССИВНЫЕ НАСТРОЙКИ"""
         return {
             'trading': {
                 'min_spread_percent': 7.5,
                 'target_spread_percent': 1.5,
-                'max_position_size': 100,
+                'max_position_size': 5.10,      # Фиксированный размер
                 'test_mode': True,
-                'symbols': ['BTC/USDT', 'ETH/USDT', 'BNB/USDT']
+                'leverage': 2,                  # Плечо 2x
+                'symbols': ['BTC/USDT', 'ETH/USDT', 'PEPE/USDT']
             },
             'risk_management': {
-                'max_daily_loss': 50,
-                'stop_loss_percent': 2.0,
-                'take_profit_percent': 4.0,
-                'max_positions': 3
+                'max_daily_loss': 999999,       # УБРАН лимит
+                'stop_loss_percent': 50.0,      # АГРЕССИВНЫЙ стоп-лосс 50%
+                'take_profit_percent': 20.0,    # Увеличен тейк-профит
+                'max_positions': 10,            # Больше позиций
+                'fixed_position_size': 5.10,    # Фиксированный размер
+                'position_leverage': 2          # Плечо 2x
             },
             'monitoring': {
-                'price_update_interval': 5,
-                'max_price_age': 30
+                'price_update_interval': 1,     # КАЖДУЮ СЕКУНДУ
+                'max_price_age': 2
             }
         }
     
@@ -81,8 +85,19 @@ class Config:
     
     @property
     def max_position_size(self) -> float:
-        return float(os.getenv('MAX_POSITION_SIZE', 
-                             self._config['trading']['max_position_size']))
+        """ФИКСИРОВАННЫЙ размер позиции $5.10"""
+        return float(os.getenv('FIXED_POSITION_SIZE', 
+                             self._config['trading'].get('max_position_size', 5.10)))
+    
+    @property 
+    def fixed_position_size(self) -> float:
+        """Фиксированный размер позиции"""
+        return float(self._config['risk_management'].get('fixed_position_size', 5.10))
+    
+    @property
+    def leverage(self) -> int:
+        """Кредитное плечо"""
+        return int(self._config['trading'].get('leverage', 2))
     
     @property
     def symbols(self) -> List[str]:
@@ -91,23 +106,27 @@ class Config:
     
     @property
     def price_update_interval(self) -> int:
-        """Интервал обновления цен в секундах"""
+        """Интервал обновления цен - КАЖДУЮ СЕКУНДУ"""
         return self._config['monitoring']['price_update_interval']
     
     @property
     def max_daily_loss(self) -> float:
-        return self._config['risk_management']['max_daily_loss']
+        """УБРАН лимит потерь"""
+        return float('inf')  # Без лимитов
     
     @property
     def stop_loss_percent(self) -> float:
+        """АГРЕССИВНЫЙ стоп-лосс 50%"""
         return self._config['risk_management']['stop_loss_percent']
     
     @property
     def take_profit_percent(self) -> float:
+        """Увеличенный тейк-профит"""
         return self._config['risk_management']['take_profit_percent']
     
     @property
     def max_positions(self) -> int:
+        """Максимальное количество позиций - увеличено"""
         return self._config['risk_management']['max_positions']
     
     def validate(self) -> bool:
