@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Секретные файлы (КРИТИЧЕСКИ ВАЖНО!)
+.env
+*.key
+config/api_keys.env
+secrets/
+api_keys.txt
+
+# Логи и данные
+logs/
+*.log
+data/
+*.db
+*.sqlite
+*.sqlite3
+*.csv
+positions/
+trades/
+
+# VS Code
+.vscode/settings.json
+.vscode/launch.json
+
+# Операционная система
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Временные файлы
+*.tmp
+*.temp
+.cache/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Coverage
+htmlcov/
+.coverage

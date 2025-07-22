@@ -1,0 +1,156 @@
+# Настройки арбитражного бота MEXC vs DEX
+# Автор: 24vasilekk (24vasilekk@gmail.com)
+
+trading:
+  # Основные параметры торговли
+  min_spread_percent: 7.5        # Минимальный спред для входа в сделку (%)
+  target_spread_percent: 1.5     # Целевой спред для выхода из сделки (%)  
+  max_position_size: 100         # Максимальный размер позиции в USDT
+  test_mode: true                # Тестовый режим (true = без реальных сделок)
+  
+  # Список торговых пар для мониторинга (40 самых ликвидных)
+  symbols:
+    # Топ-10 по капитализации
+    - "BTC/USDT"     # Bitcoin
+    - "ETH/USDT"     # Ethereum  
+    - "BNB/USDT"     # Binance Coin
+    - "ADA/USDT"     # Cardano
+    - "SOL/USDT"     # Solana
+    - "XRP/USDT"     # Ripple
+    - "DOT/USDT"     # Polkadot
+    - "DOGE/USDT"    # Dogecoin
+    - "AVAX/USDT"    # Avalanche
+    - "LINK/USDT"    # Chainlink
+    
+    # DeFi токены
+    - "MATIC/USDT"   # Polygon
+    - "UNI/USDT"     # Uniswap
+    - "AAVE/USDT"    # Aave
+    - "COMP/USDT"    # Compound
+    - "MKR/USDT"     # Maker
+    - "SNX/USDT"     # Synthetix
+    - "SUSHI/USDT"   # SushiSwap
+    - "YFI/USDT"     # Yearn Finance
+    - "1INCH/USDT"   # 1inch
+    - "CRV/USDT"     # Curve
+    
+    # Альткоины
+    - "LTC/USDT"     # Litecoin
+    - "BCH/USDT"     # Bitcoin Cash
+    - "FIL/USDT"     # Filecoin
+    - "TRX/USDT"     # TRON
+    - "ETC/USDT"     # Ethereum Classic
+    - "XLM/USDT"     # Stellar
+    - "VET/USDT"     # VeChain
+    - "ICP/USDT"     # Internet Computer
+    - "ATOM/USDT"    # Cosmos
+    - "NEAR/USDT"    # NEAR Protocol
+    
+    # Мем-коины и популярные
+    - "SHIB/USDT"    # Shiba Inu
+    - "APE/USDT"     # ApeCoin
+    - "SAND/USDT"    # The Sandbox
+    - "MANA/USDT"    # Decentraland
+    - "AXS/USDT"     # Axie Infinity
+    - "GALA/USDT"    # Gala
+    - "ENJ/USDT"     # Enjin Coin
+    - "CHZ/USDT"     # Chiliz
+    - "BAT/USDT"     # Basic Attention Token
+    - "ZRX/USDT"     # 0x Protocol
+
+exchanges:
+  # Настройки MEXC Futures
+  mexc:
+    name: "MEXC Futures"
+    type: "futures" 
+    fee_rate: 0.0002            # Комиссия 0.02% (maker/taker)
+    leverage: 1                 # Кредитное плечо (начинайте с 1x!)
+    
+  # Источники цен DEX
+  dex:
+    # CoinGecko - основной источник
+    coingecko:
+      url: "https://api.coingecko.com/api/v3"
+      fee_rate: 0.003           # Средняя комиссия DEX ~0.3%
+      weight: 0.5               # Вес источника при усреднении
+      
+    # DexScreener - дополнительный
+    dexscreener:
+      url: "https://api.dexscreener.com/latest"
+      fee_rate: 0.003
+      weight: 0.3
+      
+    # Binance для сравнения (не DEX, но для контроля)
+    binance_spot:
+      url: "https://api.binance.com/api/v3" 
+      fee_rate: 0.001
+      weight: 0.2
+
+monitoring:
+  price_update_interval: 5      # Интервал обновления цен (секунды)
+  health_check_interval: 60     # Интервал проверки здоровья системы (секунды)
+  max_price_age: 30            # Максимальный возраст цены (секунды)
+  reconnect_attempts: 3        # Попытки переподключения при ошибках
+
+risk_management:
+  # Лимиты потерь
+  max_daily_loss: 50           # Максимальные потери в день (USDT) - НАЧНИТЕ С $50!
+  max_weekly_loss: 200         # Максимальные потери в неделю (USDT)
+  max_total_loss: 500          # Максимальные общие потери (USDT)
+  
+  # Управление позициями
+  max_positions: 3             # Максимальное количество одновременных позиций
+  max_position_time: 3600      # Максимальное время удержания позиции (секунды)
+  
+  # Стоп-лоссы и тейк-профиты
+  stop_loss_percent: 2.0       # Стоп-лосс (%)
+  take_profit_percent: 4.0     # Тейк-профит (%)
+  
+  # Размеры позиций
+  min_position_size: 10        # Минимальный размер позиции (USDT)
+  position_size_percent: 10    # Процент от баланса на одну позицию
+
+logging:
+  level: "INFO"                # DEBUG, INFO, WARNING, ERROR
+  file: "logs/arbitrage_bot.log"
+  max_size: "10MB"
+  backup_count: 5
+  
+  # Что логировать
+  log_trades: true             # Логировать все сделки
+  log_opportunities: true      # Логировать найденные возможности
+  log_errors: true            # Логировать ошибки
+  log_performance: true       # Логировать производительность
+
+notifications:
+  # Telegram уведомления (опционально)
+  telegram:
+    enabled: false
+    bot_token: ""
+    chat_id: ""
+    
+    # Что отправлять в Telegram
+    notify_trades: true        # Уведомления о сделках
+    notify_errors: true        # Уведомления об ошибках  
+    notify_daily_report: true  # Ежедневный отчет
+  
+  # Email уведомления (опционально)
+  email:
+    enabled: false
+    smtp_server: "smtp.gmail.com"
+    port: 587
+    username: ""
+    password: ""
+    to_email: ""
+
+database:
+  # Настройки базы данных для хранения истории
+  url: "sqlite:///data/arbitrage.db"
+  
+  # Что сохранять
+  save_prices: true            # Сохранять историю цен
+  save_trades: true            # Сохранять историю сделок
+  save_opportunities: true     # Сохранять найденные возможности
+  
+  # Очистка старых данных
+  cleanup_days: 30            # Удалять данные старше 30 дней
