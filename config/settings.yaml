@@ -1,5 +1,6 @@
 # Настройки арбитражного бота MEXC vs DEX
 # Автор: 24vasilekk (24vasilekk@gmail.com)
+# Путь: config/settings.yaml
 
 trading:
   # Основные параметры торговли
@@ -8,55 +9,51 @@ trading:
   max_position_size: 100         # Максимальный размер позиции в USDT
   test_mode: true                # Тестовый режим (true = без реальных сделок)
   
-  # Список торговых пар для мониторинга (40 самых ликвидных)
+  # ОБНОВЛЕННЫЙ список торговых пар для мониторинга (40 монет)
   symbols:
-    # Топ-10 по капитализации
-    - "BTC/USDT"     # Bitcoin
-    - "ETH/USDT"     # Ethereum  
-    - "BNB/USDT"     # Binance Coin
-    - "ADA/USDT"     # Cardano
-    - "SOL/USDT"     # Solana
-    - "XRP/USDT"     # Ripple
-    - "DOT/USDT"     # Polkadot
-    - "DOGE/USDT"    # Dogecoin
-    - "AVAX/USDT"    # Avalanche
-    - "LINK/USDT"    # Chainlink
+    # НОВЫЕ ДОБАВЛЕННЫЕ МОНЕТЫ (25 шт.)
+    - "DIS/USDT"       # DIS
+    - "UPTOP/USDT"     # UPTOP
+    - "IRIS/USDT"      # IrisVirtual
+    - "DUPE/USDT"      # DUPE
+    - "TAG/USDT"       # TAG
+    - "STARTUP/USDT"   # Startup
+    - "GOG/USDT"       # GOG
+    - "TGT/USDT"       # TGT
+    - "AURASOL/USDT"   # AuraSol
+    - "DINO/USDT"      # DINO
+    - "ALTCOIN/USDT"   # AltCoin
+    - "PEPE/USDT"      # PepeOnTron (используем PEPE)
+    - "ECHO/USDT"      # ECHO
+    - "MANYU/USDT"     # Manyu
+    - "APETH/USDT"     # apETH
+    - "LABUBU/USDT"    # Labubu
+    - "FART/USDT"      # FartBoy (сокращенный символ)
+    - "ELDE/USDT"      # ELDE
+    - "GP/USDT"        # GP
+    - "HOUSE/USDT"     # House
+    - "ZEUS/USDT"      # ZeusETH (используем ZEUS)
+    - "BR/USDT"        # BR
+    - "VSN/USDT"       # VSN
+    - "RION/USDT"      # RION
+    - "DEVVE/USDT"     # DEVVE
     
-    # DeFi токены
-    - "MATIC/USDT"   # Polygon
-    - "UNI/USDT"     # Uniswap
-    - "AAVE/USDT"    # Aave
-    - "COMP/USDT"    # Compound
-    - "MKR/USDT"     # Maker
-    - "SNX/USDT"     # Synthetix
-    - "SUSHI/USDT"   # SushiSwap
-    - "YFI/USDT"     # Yearn Finance
-    - "1INCH/USDT"   # 1inch
-    - "CRV/USDT"     # Curve
-    
-    # Альткоины
-    - "LTC/USDT"     # Litecoin
-    - "BCH/USDT"     # Bitcoin Cash
-    - "FIL/USDT"     # Filecoin
-    - "TRX/USDT"     # TRON
-    - "ETC/USDT"     # Ethereum Classic
-    - "XLM/USDT"     # Stellar
-    - "VET/USDT"     # VeChain
-    - "ICP/USDT"     # Internet Computer
-    - "ATOM/USDT"    # Cosmos
-    - "NEAR/USDT"    # NEAR Protocol
-    
-    # Мем-коины и популярные
-    - "SHIB/USDT"    # Shiba Inu
-    - "APE/USDT"     # ApeCoin
-    - "SAND/USDT"    # The Sandbox
-    - "MANA/USDT"    # Decentraland
-    - "AXS/USDT"     # Axie Infinity
-    - "GALA/USDT"    # Gala
-    - "ENJ/USDT"     # Enjin Coin
-    - "CHZ/USDT"     # Chiliz
-    - "BAT/USDT"     # Basic Attention Token
-    - "ZRX/USDT"     # 0x Protocol
+    # СТАБИЛЬНЫЕ МОНЕТЫ для диверсификации (15 шт.)
+    - "BTC/USDT"       # Bitcoin
+    - "ETH/USDT"       # Ethereum
+    - "BNB/USDT"       # Binance Coin
+    - "SOL/USDT"       # Solana
+    - "ADA/USDT"       # Cardano
+    - "XRP/USDT"       # Ripple
+    - "DOGE/USDT"      # Dogecoin
+    - "AVAX/USDT"      # Avalanche
+    - "LINK/USDT"      # Chainlink
+    - "MATIC/USDT"     # Polygon
+    - "UNI/USDT"       # Uniswap
+    - "LTC/USDT"       # Litecoin
+    - "ATOM/USDT"      # Cosmos
+    - "NEAR/USDT"      # NEAR Protocol
+    - "SHIB/USDT"      # Shiba Inu
 
 exchanges:
   # Настройки MEXC Futures
@@ -93,8 +90,8 @@ monitoring:
   reconnect_attempts: 3        # Попытки переподключения при ошибках
 
 risk_management:
-  # Лимиты потерь
-  max_daily_loss: 50           # Максимальные потери в день (USDT) - НАЧНИТЕ С $50!
+  # Лимиты потерь - НАЧНИТЕ С МАЛЕНЬКИХ СУММ!
+  max_daily_loss: 50           # Максимальные потери в день (USDT)
   max_weekly_loss: 200         # Максимальные потери в неделю (USDT)
   max_total_loss: 500          # Максимальные общие потери (USDT)
   
