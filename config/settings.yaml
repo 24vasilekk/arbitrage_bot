@@ -1,7 +1,7 @@
 # Настройки арбитражного бота MEXC vs DEX
 # Автор: 24vasilekk (24vasilekk@gmail.com)
 # Путь: config/settings.yaml
-# ОБНОВЛЕН: Только DexScreener, быстрые обновления, агрессивные настройки
+# ОБНОВЛЕН: Только новые токены (25 шт.), убраны стабильные
 
 trading:
   # Основные параметры торговли
@@ -11,7 +11,7 @@ trading:
   test_mode: true                # Тестовый режим (true = без реальных сделок)
   leverage: 2                    # Кредитное плечо 2x
   
-  # СПИСОК торговых пар для мониторинга (40 монет)
+  # СПИСОК торговых пар - ТОЛЬКО НОВЫЕ ТОКЕНЫ (25 монет)
   symbols:
     # НОВЫЕ ДОБАВЛЕННЫЕ МОНЕТЫ (25 шт.)
     - "DIS/USDT"       # DIS
@@ -25,37 +25,20 @@ trading:
     - "AURASOL/USDT"   # AuraSol
     - "DINO/USDT"      # DINO
     - "ALTCOIN/USDT"   # AltCoin
-    - "PEPE/USDT"      # PepeOnTron (используем PEPE)
+    - "PEPE/USDT"      # PEPE
     - "ECHO/USDT"      # ECHO
     - "MANYU/USDT"     # Manyu
     - "APETH/USDT"     # apETH
     - "LABUBU/USDT"    # Labubu
-    - "FART/USDT"      # FartBoy (сокращенный символ)
+    - "FART/USDT"      # FartBoy
     - "ELDE/USDT"      # ELDE
     - "GP/USDT"        # GP
     - "HOUSE/USDT"     # House
-    - "ZEUS/USDT"      # ZeusETH (используем ZEUS)
+    - "ZEUS/USDT"      # ZeusETH
     - "BR/USDT"        # BR
     - "VSN/USDT"       # VSN
     - "RION/USDT"      # RION
     - "DEVVE/USDT"     # DEVVE
-    
-    # СТАБИЛЬНЫЕ МОНЕТЫ для диверсификации (15 шт.)
-    - "BTC/USDT"       # Bitcoin
-    - "ETH/USDT"       # Ethereum
-    - "BNB/USDT"       # Binance Coin
-    - "SOL/USDT"       # Solana
-    - "ADA/USDT"       # Cardano
-    - "XRP/USDT"       # Ripple
-    - "DOGE/USDT"      # Dogecoin
-    - "AVAX/USDT"      # Avalanche
-    - "LINK/USDT"      # Chainlink
-    - "MATIC/USDT"     # Polygon
-    - "UNI/USDT"       # Uniswap
-    - "LTC/USDT"       # Litecoin
-    - "ATOM/USDT"      # Cosmos
-    - "NEAR/USDT"      # NEAR Protocol
-    - "SHIB/USDT"      # Shiba Inu
 
 exchanges:
   # Настройки MEXC Futures

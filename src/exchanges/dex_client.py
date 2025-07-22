@@ -2,7 +2,7 @@
 Клиент для получения цен ТОЛЬКО с DexScreener
 Автор: 24vasilekk
 Путь: src/exchanges/dex_client.py
-ОБНОВЛЕН: Убраны CoinGecko и Binance, только DexScreener
+ОБНОВЛЕН: Только новые токены, убраны стабильные
 """
 
 import aiohttp
@@ -21,9 +21,9 @@ class DEXClient:
         self._price_cache = {}
         self._cache_ttl = 1  # Кеш на 1 секунду для быстрых обновлений
         
-        # Маппинг токенов для поиска в DexScreener
+        # Маппинг токенов для поиска в DexScreener - ТОЛЬКО НОВЫЕ ТОКЕНЫ
         self.token_search_mapping = {
-            # НОВЫЕ ТОКЕНЫ
+            # НОВЫЕ ТОКЕНЫ (25 шт.)
             'DIS/USDT': 'DIS',
             'UPTOP/USDT': 'UPTOP', 
             'IRIS/USDT': 'IRIS',
@@ -48,30 +48,57 @@ class DEXClient:
             'BR/USDT': 'BR',
             'VSN/USDT': 'VSN',
             'RION/USDT': 'RION',
-            'DEVVE/USDT': 'DEVVE',
-            
-            # СТАБИЛЬНЫЕ ТОКЕНЫ
-            'BTC/USDT': 'BTC',
-            'ETH/USDT': 'ETH',
-            'BNB/USDT': 'BNB',
-            'SOL/USDT': 'SOL',
-            'ADA/USDT': 'ADA',
-            'XRP/USDT': 'XRP',
-            'DOGE/USDT': 'DOGE',
-            'AVAX/USDT': 'AVAX',
-            'LINK/USDT': 'LINK',
-            'MATIC/USDT': 'MATIC',
-            'UNI/USDT': 'UNI',
-            'LTC/USDT': 'LTC',
-            'ATOM/USDT': 'ATOM',
-            'NEAR/USDT': 'NEAR',
-            'SHIB/USDT': 'SHIB'
+            'DEVVE/USDT': 'DEVVE'
         }
+    
+    def add_new_token(self, symbol: str, search_term: str = None):
+        """
+        ДОБАВЛЕНИЕ НОВОГО ТОКЕНА В СПИСОК
+        
+        Использование:
+        dex_client.add_new_token('NEWTOKEN/USDT', 'NEWTOKEN')
+        """
+        if search_term is None:
+            search_term = symbol.split('/')[0].upper()
+        
+        self.token_search_mapping[symbol] = search_term
+        self.logger.info(f"✅ Добавлен новый токен: {symbol} -> {search_term}")
+    
+    def remove_token(self, symbol: str):
+        """
+        УДАЛЕНИЕ ТОКЕНА ИЗ СПИСКА
+        
+        Использование:
+        dex_client.remove_token('OLDTOKEN/USDT')
+        """
+        if symbol in self.token_search_mapping:
+            del self.token_search_mapping[symbol]
+            self.logger.info(f"🗑️ Удален токен: {symbol}")
+        else:
+            self.logger.warning(f"⚠️ Токен {symbol} не найден в списке")
+    
+    def list_all_tokens(self) -> List[str]:
+        """Получить список всех токенов"""
+        return list(self.token_search_mapping.keys())
+    
+    def update_token_mapping(self, new_mapping: Dict[str, str]):
+        """
+        МАССОВОЕ ОБНОВЛЕНИЕ ТОКЕНОВ
+        
+        Использование:
+        new_tokens = {
+            'TOKEN1/USDT': 'TOKEN1',
+            'TOKEN2/USDT': 'TOKEN2'
+        }
+        dex_client.update_token_mapping(new_tokens)
+        """
+        self.token_search_mapping.update(new_mapping)
+        self.logger.info(f"🔄 Обновлено токенов: {len(new_mapping)}")
     
     async def __aenter__(self):
         """Async context manager вход"""
         self.session = aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=10),  # Быстрый таймаут
+            timeout=aiohttp.ClientTimeout(total=30),  # Увеличен таймаут
             headers={'User-Agent': 'ArbitrageBot/2.0'}
         )
         return self
@@ -100,6 +127,7 @@ class DEXClient:
             if not search_token:
                 base_token = symbol.split('/')[0].upper()
                 search_token = base_token
+                self.logger.warning(f"⚠️ Токен {symbol} не в маппинге, используем {search_token}")
             
             # Поиск по токену
             url = "https://api.dexscreener.com/latest/dex/search"
@@ -119,11 +147,11 @@ class DEXClient:
                             liquidity = pair.get('liquidity', {}).get('usd', 0)
                             volume_24h = pair.get('volume', {}).get('h24', 0)
                             
-                            # Строгая фильтрация
+                            # Фильтрация для новых токенов (более мягкие требования)
                             if (quote_symbol in ['USDT', 'USDC'] and 
                                 base_symbol == search_token and 
-                                liquidity > 10000 and  # Минимум $10k ликвидности
-                                volume_24h > 1000):    # Минимум $1k объем за 24ч
+                                liquidity > 1000 and    # Снижен лимит для новых токенов
+                                volume_24h > 100):      # Снижен лимит объема
                                 
                                 quality_pairs.append({
                                     'pair': pair,
@@ -155,10 +183,12 @@ class DEXClient:
                                 self.logger.debug(f"🔍 DexScreener {symbol}: ${final_price:.8f} "
                                                f"(из {len(prices)} пар)")
                                 return final_price
+                        else:
+                            self.logger.warning(f"⚠️ {symbol}: Нет качественных пар (требуется ликвидность >$1k)")
                 
                 elif response.status == 429:
                     self.logger.warning(f"⚠️ DexScreener rate limit для {symbol}")
-                    await asyncio.sleep(0.5)  # Пауза при rate limit
+                    await asyncio.sleep(1)  # Увеличена пауза при rate limit
                     
         except asyncio.TimeoutError:
             self.logger.warning(f"⏰ DexScreener timeout для {symbol}")
@@ -179,10 +209,10 @@ class DEXClient:
             await self.__aenter__()
         
         try:
-            # Получаем цену с DexScreener с таймаутом
+            # Получаем цену с DexScreener с увеличенным таймаутом
             price = await asyncio.wait_for(
                 self._fetch_dexscreener_price(symbol),
-                timeout=8.0  # Быстрый таймаут
+                timeout=25.0  # Увеличен таймаут для новых токенов
             )
             
             if price and price > 0:
@@ -215,8 +245,8 @@ class DEXClient:
         if not self.session:
             await self.__aenter__()
         
-        # Увеличиваем semaphore для быстрого получения данных
-        semaphore = asyncio.Semaphore(10)  # Больше одновременных запросов
+        # Уменьшаем semaphore для новых токенов чтобы не перегружать API
+        semaphore = asyncio.Semaphore(5)  # Меньше одновременных запросов
         
         async def get_price_with_semaphore(symbol):
             async with semaphore:
